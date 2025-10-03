@@ -1,0 +1,66 @@
+services:
+  webserver:
+    build: .
+    container_name: cuidemjunts-nestjs
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      - TZ=${TZ}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - NODE_ENV=${NODE_ENV}
+    ports:
+      - ${WEB_SERVER_PORT}:3000
+    working_dir: /web
+    command: pm2-runtime start pm2.json
+    volumes:
+      - .:/web
+    networks:
+      - cuidemjunts-network
+
+  database:
+    image: yobasystems/alpine-mariadb:11.4.5
+    container_name: cuidemjunts-mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - TZ=${TZ}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "${DB_PORT}:3306"
+    networks:
+      - cuidemjunts-network
+
+  phpmyadmin:
+    image: phpmyadmin:apache
+    container_name: cuidemjunts-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      PMA_HOST: database # nombre del servicio de tu MySQL
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASSWORD}
+      UPLOAD_LIMIT: 256M # opcional, límite de subida de archivos .sql
+      BLOWFISH_SECRET: ${BLOWFISH_SECRET}
+    ports:
+      - "8081:80"
+    networks:
+      - cuidemjunts-network
+
+volumes:
+  mariadb_data:
+    driver: local
+
+networks:
+  cuidemjunts-network:
+    driver: bridge
