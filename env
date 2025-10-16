@@ -1,0 +1,17 @@
+# Entorno
+NODE_ENV=development
+TZ=Europe/Madrid
+
+# Puertos
+WEB_SERVER_PORT=
+DB_PORT=
+
+# Base de datos
+DB_HOST=
+DB_USER=
+DB_PASSWORD=
+DB_ROOT_PASSWORD=
+DB_DATABASE=
+
+# clave de cifrado para asegurar las cookies de autenticación
+BLOWFISH_SECRET=
