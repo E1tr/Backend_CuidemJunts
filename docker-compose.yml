@@ -40,7 +40,6 @@ services:
       - TZ=${TZ}
     volumes:
       - mariadb_data:/var/lib/mysql
-      - ./db:/docker-entrypoint-initdb.d
     ports:
       - "${DB_PORT}:3306"
     networks:
