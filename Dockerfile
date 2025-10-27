@@ -1,5 +1,5 @@
 # ---- Etapa de construcción ----
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /usr/src/app
 
 # Copia dependencias desde la carpeta nest_backend
@@ -11,7 +11,7 @@ COPY nest_backend ./
 RUN npm run build
 
 # ---- Etapa de ejecución ----
-FROM node:18-alpine
+FROM node:22-alpine AS runner
 WORKDIR /usr/src/app
 
 # Copia solo lo necesario desde la etapa de build
