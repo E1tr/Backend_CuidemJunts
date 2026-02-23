@@ -27,11 +27,11 @@ jobs:
           npm install
           npm run build
 
-      - name: Subir solo la carpeta del Backend
+      - name: Preparar artefacto (Solo el contenido de nest_backend)
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          # Al poner nest_backend/, el contenido de esa carpeta será la raíz en Azure
+          # IMPORTANTE: Al poner la barra al final, subimos el CONTENIDO de la carpeta
           path: nest_backend/
 
   deploy:
@@ -60,5 +60,5 @@ jobs:
         with:
           app-name: "cuidemjunts-webapp"
           package: .
-          # Forzamos el comando de inicio para que no haya dudas
+          # Ahora que nest_backend es la raíz, la ruta es simplemente esta:
           startup-command: "node dist/main.js"
