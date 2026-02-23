@@ -9,5 +9,8 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/passport-jwt": "^4.0.1"
+  },
+  "scripts": {
+    "start": "node nest_backend/dist/main.js"
   }
 }
