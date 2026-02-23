@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js app to Azure Web App - cuidemjunts-webapp
 
 on:
@@ -12,14 +9,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read #This is required for actions/checkout
-
     steps:
       - name: Checkout del repositorio y submódulos
         uses: actions/checkout@v4
         with:
-          submodules: recursive # <-- ESTO DESCARGA TU SUBREPOSITORIO
+          submodules: recursive
           fetch-depth: 0
 
       - name: Set up Node.js version
@@ -27,32 +21,32 @@ jobs:
         with:
           node-version: "22.x"
 
-      - name: npm install, build, and test
-        # Entramos a la carpeta del submódulo antes de instalar y compilar
+      - name: Instalar y Compilar Backend
         run: |
           cd nest_backend
           npm install
-          npm run build --if-present
-          #npm run test --if-present
+          npm run build
 
-      - name: Upload artifact for deployment job
+      - name: Subir solo la carpeta del Backend
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          # Al poner nest_backend/, el contenido de esa carpeta será la raíz en Azure
+          path: nest_backend/
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Descargar artefacto
         uses: actions/download-artifact@v4
         with:
           name: node-app
+          path: .
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -61,10 +55,10 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_EA84F3092A63450B89E4C61569AD39CB }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_490025C3295044118F1CA7F3FE530922 }}
 
-      - name: "Deploy to Azure Web App"
-        id: deploy-to-webapp
+      - name: "Desplegar en Azure Web App"
         uses: azure/webapps-deploy@v3
         with:
           app-name: "cuidemjunts-webapp"
-          slot-name: "Production"
           package: .
+          # Forzamos el comando de inicio para que no haya dudas
+          startup-command: "node dist/main.js"
