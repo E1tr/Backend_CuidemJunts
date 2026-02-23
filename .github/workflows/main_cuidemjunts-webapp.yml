@@ -16,7 +16,11 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout del repositorio y submódulos
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive # <-- ESTO DESCARGA TU SUBREPOSITORIO
+          fetch-depth: 0
 
       - name: Set up Node.js version
         uses: actions/setup-node@v3
@@ -24,7 +28,9 @@ jobs:
           node-version: '22.x'
 
       - name: npm install, build, and test
+        # Entramos a la carpeta del submódulo antes de instalar y compilar
         run: |
+          cd nest_backend/nest_backend-main
           npm install
           npm run build --if-present
           npm run test --if-present
@@ -62,4 +68,3 @@ jobs:
           app-name: 'cuidemjunts-webapp'
           slot-name: 'Production'
           package: .
-          
